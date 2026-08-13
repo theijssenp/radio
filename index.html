@@ -1,0 +1,965 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hodc FM</title>
+<meta name="description" content="Live radiostreams.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#E4E6E9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E141A" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Hodc FM">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%F0%9F%93%BB</text></svg>">
+<style>*{box-sizing:border-box}html,body{margin:0;padding:0}</style>
+</head>
+<body>
+<style>
+  :root {
+    --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --font-sans: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+
+    --t-xs: 0.6875rem;
+    --t-sm: 0.8125rem;
+    --t-md: 0.9375rem;
+    --t-lg: 1.0625rem;
+
+    /* Instrument panel, daglicht */
+    --ground: #E4E6E9;
+    --panel: #F3F4F6;
+    --panel-2: #DBDEE2;
+    --line: #C2C7CD;
+    --line-soft: #D4D8DD;
+    --text: #131A21;
+    --text-2: #5A6570;
+    --text-3: #838D97;
+    --accent: #C4441F;
+    --accent-ink: #FFFFFF;
+    --dial: #4E7386;
+    --shadow: 0 1px 0 rgba(19, 26, 33, 0.05);
+    --lift: 0 14px 30px rgba(19, 26, 33, 0.22);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0E141A;
+      --panel: #161E26;
+      --panel-2: #1E2833;
+      --line: #2B3742;
+      --line-soft: #222D37;
+      --text: #DCE1E6;
+      --text-2: #8B98A4;
+      --text-3: #66727D;
+      --accent: #E9663E;
+      --accent-ink: #14191E;
+      --dial: #7FA7BC;
+      --shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+      --lift: 0 14px 30px rgba(0, 0, 0, 0.55);
+    }
+  }
+
+  :root[data-theme="light"] {
+    --ground: #E4E6E9;
+    --panel: #F3F4F6;
+    --panel-2: #DBDEE2;
+    --line: #C2C7CD;
+    --line-soft: #D4D8DD;
+    --text: #131A21;
+    --text-2: #5A6570;
+    --text-3: #838D97;
+    --accent: #C4441F;
+    --accent-ink: #FFFFFF;
+    --dial: #4E7386;
+    --shadow: 0 1px 0 rgba(19, 26, 33, 0.05);
+    --lift: 0 14px 30px rgba(19, 26, 33, 0.22);
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0E141A;
+    --panel: #161E26;
+    --panel-2: #1E2833;
+    --line: #2B3742;
+    --line-soft: #222D37;
+    --text: #DCE1E6;
+    --text-2: #8B98A4;
+    --text-3: #66727D;
+    --accent: #E9663E;
+    --accent-ink: #14191E;
+    --dial: #7FA7BC;
+    --shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+    --lift: 0 14px 30px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--t-md);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 9rem;
+  }
+
+  body.sleept { user-select: none; -webkit-user-select: none; cursor: grabbing; }
+
+  .wrap {
+    max-width: 62rem;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 0;
+  }
+
+  /* ---- Kop ---- */
+
+  .plate {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 2px solid var(--text);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.5rem;
+  }
+
+  h1 {
+    font-family: var(--font-mono);
+    font-size: clamp(1.75rem, 7vw, 2.75rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .herstel {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    padding: 0 0 0.2rem;
+    cursor: pointer;
+    margin-bottom: 0.15rem;
+  }
+
+  .herstel[hidden] { display: none; }
+  .herstel:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .herstel:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ---- Banden ---- */
+
+  .band { margin-top: 2.75rem; }
+
+  /* Een leeggesleepte band blijft staan als dropzone, anders kun je er
+     niets meer in terugleggen. */
+  .band.leeg .band-name,
+  .band.leeg .band-count { color: var(--text-3); }
+
+  .band.leeg .grid::after {
+    content: "sleep hier";
+    grid-column: 1 / -1;
+    border: 1px dashed var(--line);
+    border-radius: 2px;
+    padding: 1.15rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  /* ---- Favorieten ---- */
+
+  /* Deze band hoort bij geen enkele zender in ZENDERS; hij staat altijd
+     bovenaan en blijft ook leeg staan, anders valt er niets in te slepen. */
+  .band.fav { margin-top: 2rem; }
+
+  .band.fav .band-name,
+  .band.fav.leeg .band-name { color: var(--accent); }
+
+  .band.fav .band-name::before {
+    content: "★";
+    margin-right: 0.55em;
+    letter-spacing: 0;
+  }
+
+  .band.fav.leeg .grid::after {
+    content: "sleep hier je favoriete zenders";
+    border-color: var(--accent);
+    color: var(--text-2);
+  }
+
+  .band-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.875rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .band-name {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .band-rule { flex: 1; height: 1px; background: var(--line); }
+
+  .band-count {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 0.625rem;
+    min-height: 3.5rem;
+  }
+
+  /* ---- Zenderkaart ---- */
+
+  .stn {
+    display: flex;
+    align-items: stretch;
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-left: 3px solid var(--line);
+    border-radius: 2px;
+    box-shadow: var(--shadow);
+    transition: border-color 0.12s ease, background 0.12s ease;
+  }
+
+  .stn:hover { border-left-color: var(--dial); background: var(--panel-2); }
+
+  .stn[data-state="playing"],
+  .stn[data-state="loading"] {
+    border-left-color: var(--accent);
+    border-color: var(--line);
+    background: var(--panel-2);
+  }
+
+  .stn[data-state="error"] { border-left-color: var(--text-3); opacity: 0.65; }
+
+  .stn-hit {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: none;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    padding: 0.75rem 0.25rem 0.75rem 0.875rem;
+    cursor: pointer;
+  }
+
+  .stn-hit:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  .stn-body { min-width: 0; flex: 1; }
+
+  .stn-name {
+    display: block;
+    font-size: var(--t-md);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stn-meta {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-top: 0.15rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stn[data-state="error"] .stn-meta { color: var(--accent); }
+
+  /* ---- Sleepgreep ---- */
+
+  .grip {
+    flex: none;
+    width: 2.25rem;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--line);
+    cursor: grab;
+    touch-action: none;
+    transition: color 0.12s ease;
+  }
+
+  .grip:hover { color: var(--text-2); }
+  .grip:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; color: var(--text-2); }
+  .grip:active { cursor: grabbing; }
+  .grip svg { width: 0.625rem; height: 1rem; fill: currentColor; display: block; }
+
+  .stn.plek { opacity: 0.28; }
+  .stn.plek .meter i { animation: none !important; }
+
+  .stn.zweeft {
+    position: fixed;
+    z-index: 60;
+    margin: 0;
+    pointer-events: none;
+    box-shadow: var(--lift);
+    border-left-color: var(--accent);
+    background: var(--panel);
+    transition: none;
+  }
+
+  /* ---- Signaalmeter ---- */
+
+  .meter {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 1.125rem;
+    width: 1.125rem;
+    flex: none;
+  }
+
+  .meter i {
+    display: block;
+    width: 3px;
+    height: 25%;
+    background: var(--line);
+    transform-origin: bottom;
+    border-radius: 1px;
+  }
+
+  .stn[data-state="playing"] .meter i {
+    background: var(--accent);
+    animation: pulse 900ms ease-in-out infinite alternate;
+  }
+
+  .meter i:nth-child(1) { animation-delay: 0ms; height: 40%; }
+  .meter i:nth-child(2) { animation-delay: 160ms; height: 70%; }
+  .meter i:nth-child(3) { animation-delay: 320ms; height: 100%; }
+  .meter i:nth-child(4) { animation-delay: 90ms; height: 55%; }
+
+  .stn[data-state="loading"] .meter i {
+    background: var(--dial);
+    animation: blink 700ms ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse { from { transform: scaleY(0.3); } to { transform: scaleY(1); } }
+  @keyframes blink { from { opacity: 0.25; } to { opacity: 1; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .meter i { animation: none !important; }
+    .stn { transition: none; }
+  }
+
+  /* ---- Transportbalk ---- */
+
+  .transport {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--panel);
+    border-top: 2px solid var(--text);
+    padding: 0.75rem 1.25rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    z-index: 10;
+  }
+
+  .transport-inner {
+    max-width: 62rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .play {
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 1px solid var(--text);
+    background: var(--text);
+    color: var(--ground);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    transition: background 0.12s ease, border-color 0.12s ease;
+  }
+
+  .play:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .play:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .play[disabled] { opacity: 0.3; cursor: default; }
+  .play[disabled]:hover { background: var(--text); border-color: var(--text); color: var(--ground); }
+  .play svg { width: 1rem; height: 1rem; fill: currentColor; display: block; }
+
+  .now { flex: 1; min-width: 0; }
+
+  .now-label {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    display: block;
+  }
+
+  .now-label[data-live="1"] { color: var(--accent); }
+
+  .now-name {
+    display: block;
+    font-size: var(--t-lg);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .vol {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 9rem;
+  }
+
+  .vol-label {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+  }
+
+  .vol input { flex: 1; width: 100%; accent-color: var(--accent); cursor: pointer; }
+  .vol input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  @media (max-width: 34rem) {
+    .vol { display: none; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="plate">
+    <div>
+      <p class="eyebrow">Live streams</p>
+      <h1>Hodc FM</h1>
+    </div>
+    <button class="herstel" id="herstelBtn" type="button" hidden>Herstel volgorde</button>
+  </header>
+
+  <main id="bands"></main>
+</div>
+
+<div class="transport">
+  <div class="transport-inner">
+    <button class="play" id="playBtn" disabled aria-label="Afspelen">
+      <svg id="playIcon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2l10 6-10 6z"/></svg>
+    </button>
+    <div class="now">
+      <span class="now-label" id="nowLabel">Niets afgespeeld</span>
+      <span class="now-name" id="nowName">Kies een zender</span>
+    </div>
+    <div class="vol">
+      <span class="vol-label">VOL</span>
+      <input type="range" id="vol" min="0" max="100" value="80" aria-label="Volume">
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ------------------------------------------------------------------
+     ZENDERS — pas deze lijst aan. Elke regel: naam, plaats, kbps, url.
+     Alleen https, en alleen mp3/aac (geen .m3u8 of .pls).
+     De volgorde hier is de startvolgorde; slepen overschrijft die.
+     ------------------------------------------------------------------ */
+  const ZENDERS = [
+    { band: "Nederland", naam: "NPO Radio 1",     plaats: "Hilversum", kbps: 192, url: "https://icecast.omroep.nl/radio1-bb-mp3" },
+    { band: "Nederland", naam: "NPO Radio 2",     plaats: "Hilversum", kbps: 192, url: "https://icecast.omroep.nl/radio2-bb-mp3" },
+    { band: "Nederland", naam: "NPO 3FM",         plaats: "Hilversum", kbps: 192, url: "https://icecast.omroep.nl/3fm-bb-mp3" },
+    { band: "Nederland", naam: "NPO Radio 4",     plaats: "Hilversum", kbps: 192, url: "https://icecast.omroep.nl/radio4-bb-mp3" },
+    { band: "Nederland", naam: "NPO Radio 5",     plaats: "Hilversum", kbps: 192, url: "https://icecast.omroep.nl/radio5-bb-mp3" },
+    { band: "Nederland", naam: "FunX",            plaats: "Rotterdam", kbps: 192, url: "https://icecast.omroep.nl/funx-bb-mp3" },
+    { band: "Nederland", naam: "BNR Nieuwsradio", plaats: "Amsterdam", kbps: 128, url: "https://stream.bnr.nl/bnr_mp3_128_20" },
+    { band: "Nederland", naam: "Qmusic",          plaats: "Amsterdam", kbps: 128, url: "https://stream.qmusic.nl/qmusic/mp3" },
+    { band: "Nederland", naam: "Radio 538",       plaats: "Hilversum", kbps: 128, url: "https://25353.live.streamtheworld.com/RADIO538.mp3" },
+    { band: "Nederland", naam: "Sky Radio",       plaats: "Hilversum", kbps: 128, url: "https://25293.live.streamtheworld.com/SKYRADIO.mp3" },
+    { band: "Nederland", naam: "Radio Veronica",  plaats: "Hilversum", kbps: 128, url: "https://25283.live.streamtheworld.com/VERONICA.mp3" },
+
+    { band: "Curaçao", naam: "Dolfijn FM 97.3",     plaats: "Willemstad", kbps: 128, url: "https://radiostreamfm.com:8130/radio.mp3" },
+    { band: "Curaçao", naam: "Dolfijn FM Classics", plaats: "Willemstad", kbps: 112, url: "https://radiostreamfm.com:8120/radio.mp3" },
+
+    { band: "Portugal", naam: "RFM",               plaats: "Lissabon", kbps: 64, url: "https://22593.live.streamtheworld.com/RFMAAC.aac" },
+    { band: "Portugal", naam: "RFM Toca Portugal", plaats: "Lissabon", kbps: 64, url: "https://27793.live.streamtheworld.com/RFM_PORTUGALAAC.aac" },
+    { band: "Portugal", naam: "RFM Novas",         plaats: "Lissabon", kbps: 64, url: "https://22733.live.streamtheworld.com/RFM_FRESCASAAC.aac" },
+
+    { band: "Huelva", naam: "Canal Sur Radio Huelva", plaats: "Huelva", kbps: 320, url: "https://rtva-live-radio.flumotion.com/rtva/csrhue.mp3" },
+    { band: "Huelva", naam: "Cadena SER Huelva",      plaats: "Huelva", kbps: 128, url: "https://25593.live.streamtheworld.com/SER_HUELVA.mp3" },
+    { band: "Huelva", naam: "Onda Cero Huelva",       plaats: "Huelva", kbps: 128, url: "https://25593.live.streamtheworld.com/OC_HUELVAAAC.aac" },
+    { band: "Huelva", naam: "COPE Huelva",            plaats: "Huelva", kbps: 96,  url: "https://wecast-bl01.flumotion.com/copesedes/huelva.mp3" },
+
+    { band: "Wereld", naam: "FIP",              plaats: "Parijs",   kbps: 128, url: "https://icecast.radiofrance.fr/fip-midfi.mp3" },
+    { band: "Wereld", naam: "France Inter",     plaats: "Parijs",   kbps: 128, url: "https://icecast.radiofrance.fr/franceinter-midfi.mp3" },
+    { band: "Wereld", naam: "KEXP",             plaats: "Seattle",  kbps: 128, url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3" },
+    { band: "Wereld", naam: "WFMU Freeform",    plaats: "Jersey City", kbps: 128, url: "https://stream0.wfmu.org/freeform-128k" },
+    { band: "Wereld", naam: "NTS 1",            plaats: "Londen",   kbps: 128, url: "https://stream-relay-geo.ntslive.net/stream" },
+    { band: "Wereld", naam: "NTS 2",            plaats: "Londen",   kbps: 128, url: "https://stream-relay-geo.ntslive.net/stream2" },
+    { band: "Wereld", naam: "Radio Paradise",   plaats: "Paradise, CA", kbps: 128, url: "https://stream.radioparadise.com/mp3-128" },
+
+    { band: "Sfeer", naam: "SomaFM Groove Salad",   plaats: "San Francisco", kbps: 128, url: "https://ice1.somafm.com/groovesalad-128-mp3" },
+    { band: "Sfeer", naam: "SomaFM Drone Zone",     plaats: "San Francisco", kbps: 128, url: "https://ice1.somafm.com/dronezone-128-mp3" },
+    { band: "Sfeer", naam: "SomaFM Deep Space One", plaats: "San Francisco", kbps: 128, url: "https://ice1.somafm.com/deepspaceone-128-mp3" },
+    { band: "Sfeer", naam: "SomaFM Secret Agent",   plaats: "San Francisco", kbps: 128, url: "https://ice1.somafm.com/secretagent-128-mp3" },
+    { band: "Sfeer", naam: "Radio Paradise Mellow", plaats: "Paradise, CA",  kbps: 128, url: "https://stream.radioparadise.com/mellow-128" },
+  ];
+
+  const BEWAARSLEUTEL = "hodcfm.volgorde.v1";
+  const ICON_PLAY = "M4 2l10 6-10 6z";
+  const ICON_STOP = "M3.5 3h3.2v10H3.5zM9.3 3h3.2v10H9.3z";
+  const GRIP_SVG =
+    '<svg viewBox="0 0 10 16" aria-hidden="true">' +
+    '<circle cx="2" cy="3" r="1.4"/><circle cx="8" cy="3" r="1.4"/>' +
+    '<circle cx="2" cy="8" r="1.4"/><circle cx="8" cy="8" r="1.4"/>' +
+    '<circle cx="2" cy="13" r="1.4"/><circle cx="8" cy="13" r="1.4"/></svg>';
+
+  const audio = new Audio();
+  audio.preload = "none";
+  audio.volume = 0.8;
+
+  const el = {
+    bands: document.getElementById("bands"),
+    playBtn: document.getElementById("playBtn"),
+    playIcon: document.querySelector("#playIcon path"),
+    nowLabel: document.getElementById("nowLabel"),
+    nowName: document.getElementById("nowName"),
+    vol: document.getElementById("vol"),
+    herstelBtn: document.getElementById("herstelBtn"),
+  };
+
+  const perUrl = new Map(ZENDERS.map((z) => [z.url, z]));
+  const knoppen = new Map();
+  /* Favorieten is geen band uit ZENDERS maar een lege bak bovenaan. Een
+     zender die je erin sleept verhuist ernaartoe, net als bij elke andere
+     band, en bepaalIndeling zet hem er na een herlaad weer in terug. */
+  const FAVORIETEN = "Favorieten";
+  const BANDVOLGORDE = [FAVORIETEN, ...new Set(ZENDERS.map((z) => z.band))];
+
+  let huidige = null;
+  let laadTimer = null;
+
+  /* ---- Opslag ---- */
+
+  function laadVolgorde() {
+    try {
+      const rauw = localStorage.getItem(BEWAARSLEUTEL);
+      return rauw ? JSON.parse(rauw) : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function bewaarVolgorde() {
+    const lijst = [];
+    for (const grid of document.querySelectorAll(".grid")) {
+      for (const kaart of grid.querySelectorAll(".stn")) {
+        lijst.push({ u: kaart.dataset.url, b: grid.dataset.band });
+      }
+    }
+    try {
+      localStorage.setItem(BEWAARSLEUTEL, JSON.stringify(lijst));
+      el.herstelBtn.hidden = false;
+    } catch (_) {
+      /* privémodus: volgorde geldt dan alleen deze sessie */
+    }
+  }
+
+  /* Bewaarde volgorde toepassen; onbekende urls overslaan, nieuwe zenders
+     achteraan hun eigen band toevoegen. */
+  function bepaalIndeling() {
+    const bewaard = laadVolgorde();
+    const indeling = new Map(BANDVOLGORDE.map((b) => [b, []]));
+    if (!bewaard) {
+      for (const z of ZENDERS) indeling.get(z.band).push(z);
+      return indeling;
+    }
+
+    el.herstelBtn.hidden = false;
+    const geplaatst = new Set();
+    for (const rij of bewaard) {
+      const z = perUrl.get(rij && rij.u);
+      if (!z || geplaatst.has(z.url)) continue;
+      const band = indeling.has(rij.b) ? rij.b : z.band;
+      indeling.get(band).push(z);
+      geplaatst.add(z.url);
+    }
+    for (const z of ZENDERS) {
+      if (!geplaatst.has(z.url)) indeling.get(z.band).push(z);
+    }
+    return indeling;
+  }
+
+  /* ---- Opbouw ---- */
+
+  function maakKaart(z) {
+    const kaart = document.createElement("div");
+    kaart.className = "stn";
+    kaart.dataset.state = "idle";
+    kaart.dataset.url = z.url;
+
+    const hit = document.createElement("button");
+    hit.className = "stn-hit";
+    hit.type = "button";
+    hit.innerHTML =
+      '<span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' +
+      '<span class="stn-body"><span class="stn-name"></span><span class="stn-meta"></span></span>';
+    hit.querySelector(".stn-name").textContent = z.naam;
+    hit.querySelector(".stn-meta").textContent = z.plaats + " · " + z.kbps + " kbps";
+    hit.addEventListener("click", () => schakel(z));
+
+    const grip = document.createElement("button");
+    grip.className = "grip";
+    grip.type = "button";
+    grip.innerHTML = GRIP_SVG;
+    grip.setAttribute("aria-label", "Verplaats " + z.naam + " — sleep, of gebruik de pijltjestoetsen");
+    grip.addEventListener("pointerdown", (e) => startSleep(e, kaart, grip));
+    grip.addEventListener("keydown", (e) => toetsVerplaats(e, kaart, grip));
+    grip.addEventListener("click", (e) => e.preventDefault());
+
+    kaart.append(hit, grip);
+    knoppen.set(z.url, kaart);
+    return kaart;
+  }
+
+  function bouw() {
+    const indeling = bepaalIndeling();
+    for (const band of BANDVOLGORDE) {
+      const sec = document.createElement("section");
+      sec.className = band === FAVORIETEN ? "band fav" : "band";
+      sec.dataset.band = band;
+
+      const head = document.createElement("div");
+      head.className = "band-head";
+      head.innerHTML =
+        '<h2 class="band-name"></h2><span class="band-rule"></span><span class="band-count"></span>';
+      head.querySelector(".band-name").textContent = band;
+      sec.appendChild(head);
+
+      const grid = document.createElement("div");
+      grid.className = "grid";
+      grid.dataset.band = band;
+      for (const z of indeling.get(band)) grid.appendChild(maakKaart(z));
+
+      sec.appendChild(grid);
+      el.bands.appendChild(sec);
+    }
+    ververfTellers();
+  }
+
+  function ververfTellers() {
+    for (const sec of document.querySelectorAll(".band")) {
+      const aantal = sec.querySelectorAll(".stn").length;
+      sec.querySelector(".band-count").textContent = String(aantal).padStart(2, "0");
+      sec.classList.toggle("leeg", aantal === 0);
+    }
+  }
+
+  /* ---- Slepen (pointer events: werkt op muis, trackpad en touch) ---- */
+
+  let sleep = null;
+  let scrollLus = null;
+
+  function startSleep(e, kaart, grip) {
+    if (e.button != null && e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const rect = kaart.getBoundingClientRect();
+    const zweef = kaart.cloneNode(true);
+    zweef.classList.add("zweeft");
+    zweef.style.width = rect.width + "px";
+    zweef.style.height = rect.height + "px";
+    zweef.style.left = rect.left + "px";
+    zweef.style.top = rect.top + "px";
+    document.body.appendChild(zweef);
+
+    kaart.classList.add("plek");
+    document.body.classList.add("sleept");
+    try { grip.setPointerCapture(e.pointerId); } catch (_) {}
+
+    sleep = {
+      kaart: kaart,
+      grip: grip,
+      zweef: zweef,
+      pointerId: e.pointerId,
+      dx: e.clientX - rect.left,
+      dy: e.clientY - rect.top,
+      x: e.clientX,
+      y: e.clientY,
+      verplaatst: false,
+    };
+
+    /* Op document, niet op de greep: bij de eerste herordening verhuist de
+       kaart (met de greep erin) in de DOM, en dan laat de browser de pointer
+       capture los. Luisteraars op de greep zouden vanaf dat moment niets meer
+       binnenkrijgen — ook de pointerup niet. */
+    document.addEventListener("pointermove", beweeg);
+    document.addEventListener("pointerup", stopSleep);
+    document.addEventListener("pointercancel", stopSleep);
+    scrollLus = requestAnimationFrame(randScroll);
+  }
+
+  function beweeg(e) {
+    if (!sleep || e.pointerId !== sleep.pointerId) return;
+    e.preventDefault();
+    sleep.x = e.clientX;
+    sleep.y = e.clientY;
+    sleep.zweef.style.left = e.clientX - sleep.dx + "px";
+    sleep.zweef.style.top = e.clientY - sleep.dy + "px";
+    mikOpDoel(e.clientX, e.clientY);
+  }
+
+  function mikOpDoel(x, y) {
+    const onder = document.elementFromPoint(x, y);
+    if (!onder) return;
+
+    const doel = onder.closest(".stn");
+    if (doel && doel !== sleep.kaart && !doel.classList.contains("zweeft")) {
+      const r = doel.getBoundingClientRect();
+      const grid = doel.parentNode;
+      const meerKolommen = grid.clientWidth > r.width * 1.5;
+      const erna = meerKolommen ? x > r.left + r.width / 2 : y > r.top + r.height / 2;
+      grid.insertBefore(sleep.kaart, erna ? doel.nextSibling : doel);
+      sleep.verplaatst = true;
+      return;
+    }
+
+    /* Boven een lege of open plek in een band: achteraan zetten. */
+    const grid = onder.closest(".grid");
+    if (grid && !grid.contains(sleep.kaart)) {
+      grid.appendChild(sleep.kaart);
+      sleep.verplaatst = true;
+    }
+  }
+
+  function randScroll() {
+    if (!sleep) return;
+    const marge = 90;
+    const snelheid = 14;
+    if (sleep.y < marge) window.scrollBy(0, -snelheid);
+    else if (sleep.y > window.innerHeight - marge - 60) window.scrollBy(0, snelheid);
+    scrollLus = requestAnimationFrame(randScroll);
+  }
+
+  function stopSleep(e) {
+    if (!sleep) return;
+    if (e && e.pointerId != null && e.pointerId !== sleep.pointerId) return;
+    const { kaart, grip, zweef, verplaatst } = sleep;
+
+    document.removeEventListener("pointermove", beweeg);
+    document.removeEventListener("pointerup", stopSleep);
+    document.removeEventListener("pointercancel", stopSleep);
+    try {
+      if (e && e.pointerId != null && grip.hasPointerCapture(e.pointerId)) {
+        grip.releasePointerCapture(e.pointerId);
+      }
+    } catch (_) {}
+    cancelAnimationFrame(scrollLus);
+
+    zweef.remove();
+    kaart.classList.remove("plek");
+    document.body.classList.remove("sleept");
+    sleep = null;
+
+    if (verplaatst) {
+      ververfTellers();
+      bewaarVolgorde();
+    }
+  }
+
+  /* ---- Verplaatsen met het toetsenbord ---- */
+
+  function toetsVerplaats(e, kaart, grip) {
+    const eerder = e.key === "ArrowUp" || e.key === "ArrowLeft";
+    const later = e.key === "ArrowDown" || e.key === "ArrowRight";
+    if (!eerder && !later) return;
+    e.preventDefault();
+
+    /* Sta je aan de rand van je eigen band en is de buurband leeg, stap er
+       dan in. Een lege band heeft geen kaarten, dus de platte lijst hieronder
+       zou hem overslaan — en dan was een lege Favorieten met het toetsenbord
+       onbereikbaar. */
+    const eigen = kaart.parentNode;
+    const inEigen = [...eigen.querySelectorAll(".stn")];
+    if (kaart === (eerder ? inEigen[0] : inEigen[inEigen.length - 1])) {
+      const grids = [...document.querySelectorAll(".grid")];
+      const buurGrid = grids[grids.indexOf(eigen) + (eerder ? -1 : 1)];
+      if (buurGrid && !buurGrid.querySelector(".stn")) {
+        buurGrid.appendChild(kaart);
+        grip.focus();
+        ververfTellers();
+        bewaarVolgorde();
+        return;
+      }
+    }
+
+    const alle = [...document.querySelectorAll(".grid .stn")];
+    const i = alle.indexOf(kaart);
+    const j = i + (eerder ? -1 : 1);
+    if (j < 0 || j >= alle.length) return;
+
+    const buur = alle[j];
+    buur.parentNode.insertBefore(kaart, eerder ? buur : buur.nextSibling);
+    grip.focus();
+    ververfTellers();
+    bewaarVolgorde();
+  }
+
+  el.herstelBtn.addEventListener("click", () => {
+    try { localStorage.removeItem(BEWAARSLEUTEL); } catch (_) {}
+    location.reload();
+  });
+
+  /* ---- Afspelen ---- */
+
+  function zetStatus(url, status, tekst) {
+    const kaart = knoppen.get(url);
+    if (!kaart) return;
+    kaart.dataset.state = status;
+    const z = perUrl.get(url);
+    kaart.querySelector(".stn-meta").textContent =
+      tekst || z.plaats + " · " + z.kbps + " kbps";
+  }
+
+  function stop() {
+    if (huidige) zetStatus(huidige.url, "idle");
+    clearTimeout(laadTimer);
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
+  }
+
+  function schakel(z) {
+    if (huidige && huidige.url === z.url && !audio.paused) {
+      stop();
+      huidige = null;
+      teken();
+      return;
+    }
+    speel(z);
+  }
+
+  function speel(z) {
+    stop();
+    huidige = z;
+    zetStatus(z.url, "loading", "verbinden…");
+    teken();
+
+    audio.src = z.url;
+    audio.play().catch(() => faal(z));
+
+    laadTimer = setTimeout(() => {
+      if (huidige && huidige.url === z.url && audio.readyState < 2) faal(z);
+    }, 12000);
+
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: z.naam,
+        artist: z.plaats,
+        album: "Hodc FM",
+      });
+    }
+  }
+
+  function faal(z) {
+    clearTimeout(laadTimer);
+    zetStatus(z.url, "error", "stream reageert niet");
+    if (huidige && huidige.url === z.url) {
+      huidige = null;
+      audio.pause();
+      teken();
+    }
+  }
+
+  function teken() {
+    const speelt = huidige && !audio.paused;
+    el.playBtn.disabled = !huidige;
+    el.playIcon.setAttribute("d", speelt ? ICON_STOP : ICON_PLAY);
+    el.playBtn.setAttribute("aria-label", speelt ? "Stoppen" : "Afspelen");
+    el.nowLabel.textContent = huidige ? (speelt ? "Nu in de ether" : "Gepauzeerd") : "Niets afgespeeld";
+    el.nowLabel.dataset.live = speelt ? "1" : "0";
+    el.nowName.textContent = huidige ? huidige.naam : "Kies een zender";
+  }
+
+  audio.addEventListener("playing", () => {
+    clearTimeout(laadTimer);
+    if (huidige) zetStatus(huidige.url, "playing", "in de ether");
+    teken();
+  });
+
+  audio.addEventListener("pause", () => {
+    if (huidige) zetStatus(huidige.url, "idle");
+    teken();
+  });
+
+  audio.addEventListener("error", () => {
+    if (huidige) faal(huidige);
+  });
+
+  el.playBtn.addEventListener("click", () => {
+    if (!huidige) return;
+    if (audio.paused) speel(huidige);
+    else { stop(); huidige = null; teken(); }
+  });
+
+  el.vol.addEventListener("input", () => {
+    audio.volume = Number(el.vol.value) / 100;
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Space" && !["INPUT", "BUTTON"].includes(e.target.tagName)) {
+      e.preventDefault();
+      el.playBtn.click();
+    }
+  });
+
+  bouw();
+  teken();
+</script>
+</body>
+</html>
